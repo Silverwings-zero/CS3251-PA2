@@ -21,13 +21,10 @@ def main():
     argument 5: optional argument message content
     '''
     parser = argparse.ArgumentParser(description= 'minitweet client side')
-    mul = parser.add_mutually_exclusive_group(required = True)
-    mul.add_argument('-u',action="store_true")
-    mul.add_argument('-d',action="store_true")
     parser.add_argument('ServerIP', type = str)
     parser.add_argument('ServerPort', type = int)
+    parser.add_argument('Username', type = str)
 
-    parser.add_argument('-m', type = str, required = '-u' in sys.argv)
     #attaching function run
     parser.set_defaults(func=run)
     args = parser.parse_args()
@@ -38,6 +35,7 @@ def main():
 def run(args):
     #check Server Ip formatting, raise exception if the input ip doesn't follow the standard format
     try:
+        #print(args.ServerIP)
         IP = inet_aton(args.ServerIP)
         serverIP = str(args.ServerIP)
     except:
@@ -45,22 +43,19 @@ def run(args):
         exit()
 
     try:
+        #print(args.ServerPort)
         serverPort = int(args.ServerPort)
         #check serverPort value, raise error if server port is out of bound
-        #if serverPort < 1000 or serverPort > 65535:
-        #    raise ValueError
+        if serverPort < 1000 or serverPort > 65535:
+           raise ValueError("ServerPort number invalid")
+        
 
-        #Determine whether the client is in upload mode or download mode
-        if args.u == True:
-            # check message length, raise error if longer than 150
-            if len(args.m) > 150:
-                raise ValueError
-            else:
-                #edit the first two characters of upload string to indicate upload mode as well as append the message
-                message = '-u' + args.m
-        else:
-            # edit the first two characters of upload string to indicate download mode
-            message = '-d'
+        #check user name only contains alphanumeric characters
+        #print(args.Username.isalnum())
+        if (not args.Username.isalnum()):
+            raise ValueError("the username should only contain alphanumeric characters")
+
+        message = args.Username
 
         #define socket using ip4 and TCP
         clientSocket = socket(AF_INET, SOCK_STREAM)
@@ -70,11 +65,9 @@ def run(args):
         clientSocket.send(message.encode())
         #receive message from Server
         serverMsg = clientSocket.recv(1024)
-        #Formatting message considering different modes
-        if args.d == True:
-            print("\""+serverMsg.decode()+"\"")
-        else:
-            print(serverMsg.decode())
+
+        print(serverMsg)
+
         #close client socket
         clientSocket.close()
     except ConnectionRefusedError:
