@@ -23,4 +23,3 @@ Protocol description:
     Once the server is run, it will constantly look for connection. This is implemented using an infinite while loop. If a connection is established with the client, the sever proceeds to store the message or send the encoded stored message back to the client based on the client's query. The client decodes the message and prints the message.
     The TCP socket is used for server. It listens to a particular port of the server based on the user entry.
     The client can access the server. If the user entered in correct amount of inputs, an error will be printed. If the format of inputs are correct and the mode is upload, the message is encoded and sent to server. If the format of inputs are correct and the mode is download, the last uploaded message will be decoded and received from server. 
-    
