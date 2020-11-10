@@ -64,7 +64,7 @@ def run(args):
         #receive message from Server
         serverMsg = clientSocket.recv(1024).decode()
 
-        print(serverMsg)
+        #print(serverMsg)
         
         #username invalid, exit
         if serverMsg == "the username is invalid, already exists":
@@ -74,6 +74,7 @@ def run(args):
 
         #prompt command line
         while True:
+            print("timelinelist is :",timelineList)
             print("Command: ", end="")
             commandinput = input()
             #pass in username
@@ -81,12 +82,18 @@ def run(args):
             clientSocket.send(command.encode())
             msg = clientSocket.recv(1024).decode()
             
+            #when the message is send to us, append the message to timeline and print the message
+
+            
             if msg.split("\"")[0] == args.Username:
                 timelineList.append("\"" + msg.split("\"")[1] + "\" " + msg.split("\"")[2])
                 print(msg.split("\"")[1])
+                
             elif msg == "message length illegal, connection refused.":
                 print(msg)
             elif msg == "message format illegal.":
+                print(msg)
+            elif msg == "user is not subscribed to the hashtag":
                 print(msg)
             elif msg == "Wrong hashtag format":
                 print(msg)
@@ -94,7 +101,8 @@ def run(args):
                 for msg in timelineList:
                     print(msg)
                     
-            print(msg)
+            #print(msg)
+
             if commandinput == "getusers": 
                 res = msg.strip('][').split(', ') 
                 for i in range(len(res)):
@@ -103,6 +111,10 @@ def run(args):
                 res = None
                 msg = None
             
+            if commandinput == "gettweets": 
+                user = msg
+                #for 
+
             if msg == "close":
                 break
         
