@@ -19,7 +19,22 @@ def on_new_client(connectionSocket, address):
         fromClient = connectionSocket.recv(1024).decode()
         
         #check subscribe
-        if fromClient.find("subscribe") == 0:
+        if fromClient.find("tweet") == 0:
+            message = fromClient.split("\"")[1]
+            hashtag = fromClient.split("\"")[2]
+            hashtag = hashtag.split()[0]
+            print(hashtag)
+            if len(message) > 150:
+                failureMsg = "message length illegal, connection refused."
+                connectionSocket.send(failureMsg.encode)
+            elif len(message) == 0 or message == None:
+                failureMsg = "message format illegal."
+            elif hashtag[0] != '#':
+                failureMsg = "Wrong hashtag format"
+                connectionSocket.send(failureMsg.encode())
+            else: 
+                connectionSocket.send(message.encode())
+        elif fromClient.find("subscribe") == 0:
             hashtag = fromClient.split()[1]
             username = fromClient.split()[2]
             if hashtag[0] != '#':
