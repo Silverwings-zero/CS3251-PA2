@@ -1,5 +1,5 @@
 '''
-author: Wanli Qian
+author: Wanli Qian, Junyang Zhang, 
 gtid: 903442597
 Description: This program features the Server side of the simple tweet application
 References: TCPClient.py and TCPServer.py from textbook slides

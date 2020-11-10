@@ -14,11 +14,9 @@ def main():
     '''
     Command Line Formatting:
     argument 0: the file
-    argument 1: optional flag -u or -d indicating upload mode or download mode, must include either one
-    argument 2: positional argument ServerIP the name of the Server in dotted format
-    argument 3: positional argument ServerPort indicate which port the user wants to connect
-    argument 4: optional flag -m: message flag only required if the -u is specified in argument 1
-    argument 5: optional argument message content
+    argument 1: positional argument ServerIP the name of the Server in dotted format
+    argument 2: positional argument ServerPort indicate which port the user wants to connect
+    argument 3: positional argument userName indicate the userName that we take
     '''
     parser = argparse.ArgumentParser(description= 'minitweet client side')
     parser.add_argument('ServerIP', type = str)
@@ -39,7 +37,7 @@ def run(args):
         IP = inet_aton(args.ServerIP)
         serverIP = str(args.ServerIP)
     except:
-        print("Error, invalid server ip")
+        print("error: server ip invalid, connection refused.")
         exit()
 
     try:
@@ -47,13 +45,13 @@ def run(args):
         serverPort = int(args.ServerPort)
         #check serverPort value, raise error if server port is out of bound
         if serverPort < 1000 or serverPort > 65535:
-           raise ValueError("ServerPort number invalid")
+           raise ValueError("error: server port invalid, connection refused.")
         
 
         #check user name only contains alphanumeric characters
         #print(args.Username.isalnum())
         if (not args.Username.isalnum()):
-            raise ValueError("the username should only contain alphanumeric characters")
+            raise ValueError("error: username has wrong format, connection refused.")
 
         message = args.Username
 
