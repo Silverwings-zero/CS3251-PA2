@@ -55,7 +55,7 @@ def run(args):
         if (not args.Username.isalnum()):
             raise ValueError("the username should only contain alphanumeric characters")
 
-        message = args.Username
+        message = "username " + args.Username
 
         #define socket using ip4 and TCP
         clientSocket = socket(AF_INET, SOCK_STREAM)
@@ -64,10 +64,24 @@ def run(args):
         #send the encoded upload string to server
         clientSocket.send(message.encode())
         #receive message from Server
-        serverMsg = clientSocket.recv(1024)
+        serverMsg = clientSocket.recv(1024).decode()
 
         print(serverMsg)
+        
+        #username invalid, exit
+        if serverMsg == "the username is invalid, already exists":
+            exit()
 
+        #prompt command line
+        while True:
+            print("Command: ", end="")
+            command = input()
+            #pass in username
+            command = command + " " + args.Username
+            clientSocket.send(command.encode())
+            msg = clientSocket.recv(1024).decode()
+            print(msg)
+        
         #close client socket
         clientSocket.close()
     except ConnectionRefusedError:
