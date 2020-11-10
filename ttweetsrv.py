@@ -1,5 +1,5 @@
 '''
-author: Wanli Qian
+author: Wanli Qian, Junyang Zhang, 
 gtid: 903442597
 Description: This program features the Server side of the simple tweet application
 References: TCPClient.py and TCPServer.py from textbook slides
@@ -97,6 +97,23 @@ def on_new_client(connectionSocket, address):
                 usernameList.append(username)
                 print('current list is', usernameList)
                 connectionSocket.send(successMsg.encode())
+
+        elif fromClient.find("getusers") == 0:
+            connectionSocket.send(str(usernameList).encode())
+
+        elif fromClient.find("exit") == 0:
+            clientName = fromClient.split()[1]
+            if clientName in hashtagUserDict:
+                del hashtagUserDict[clientName]
+            usernameList.remove(clientName)
+            print("closing ", clientName)
+            closeMsg = "closing"
+            connectionSocket.send("close".encode())
+
+            break
+
+
+
         #wrong command
         else:
             connectionSocket.send("Wrong command".encode())
