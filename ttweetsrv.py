@@ -18,12 +18,12 @@ def on_new_client(connectionSocket, address):
     while True:
         fromClient = connectionSocket.recv(1024).decode()
         
-        #check subscribe
+        #check tweet
         if fromClient.find("tweet") == 0:
             message = fromClient.split("\"")[1]
-            hashtag = fromClient.split("\"")[2]
-            hashtag = hashtag.split()[0]
-            print(hashtag)
+            hash_client = fromClient.split("\"")[2]
+            hashtag = hash_client.split()[0]
+            client = hash_client.split()[1]
             if len(message) > 150:
                 failureMsg = "message length illegal, connection refused."
                 connectionSocket.send(failureMsg.encode)
@@ -33,7 +33,13 @@ def on_new_client(connectionSocket, address):
                 failureMsg = "Wrong hashtag format"
                 connectionSocket.send(failureMsg.encode())
             else: 
-                connectionSocket.send(message.encode())
+                hashtag = hashtag.split("#")
+                print(hashtag)
+                for tag in hashtag:
+                    for key, value in hashtagUserDict.items():
+                        if tag in value:
+                            connectionSocket.send(message.encode())
+        #check subscribe
         elif fromClient.find("subscribe") == 0:
             hashtag = fromClient.split()[1]
             username = fromClient.split()[2]
@@ -81,7 +87,6 @@ def on_new_client(connectionSocket, address):
                         if hashtag in hashtagUserList:
                             hashtagUserList.remove(hashtag)
                 connectionSocket.send("operation success".encode())
-        
         #check username
         elif fromClient.find("username") == 0:
             #check if the username already been taken
@@ -97,6 +102,9 @@ def on_new_client(connectionSocket, address):
                 usernameList.append(username)
                 print('current list is', usernameList)
                 connectionSocket.send(successMsg.encode())
+        #check timeline
+        # elif fromClient.find("timeline") == 0:
+
         #wrong command
         else:
             connectionSocket.send("Wrong command".encode())
