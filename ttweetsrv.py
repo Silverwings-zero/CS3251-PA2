@@ -23,9 +23,6 @@ def on_new_client(connectionSocket, address):
             message = fromClient.split("\"")[1]
             hash_client = fromClient.split("\"")[2]
             hashtag = hash_client.split()[0]
-            print(fromClient)
-            print(hashtag)
-            print(hash_client)
             if len(message) > 150:
                 failureMsg = "message length illegal, connection refused."
                 connectionSocket.send(failureMsg.encode)
@@ -36,10 +33,13 @@ def on_new_client(connectionSocket, address):
                 connectionSocket.send(failureMsg.encode())
             else: 
                 split_hashtag = hashtag.split("#")
-                for tag in split_hashtag:
+                for tag in split_hashtag[1:]:
                     tag = "#" + tag
                     for key, value in hashtagUserDict.items():
                         if tag in value:
+                            message = key + "\"" + message + "\"" + hashtag
+                            connectionSocket.send(message.encode())
+                        elif tag == "#ALL":
                             message = key + "\"" + message + "\"" + hashtag
                             connectionSocket.send(message.encode())
                 connectionSocket.send("".encode())
