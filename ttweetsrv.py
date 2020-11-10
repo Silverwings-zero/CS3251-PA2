@@ -1,5 +1,5 @@
 '''
-author: Wanli Qian
+author: Wanli Qian, Junyang Zhang, 
 gtid: 903442597
 Description: This program features the Server side of the simple tweet application
 References: TCPClient.py and TCPServer.py from textbook slides
@@ -17,17 +17,19 @@ hashtagUserDict = {}
 def on_new_client(connectionSocket, address):
     while True:
         fromClient = connectionSocket.recv(1024).decode()
-        
+        #print("fromClient is: ", fromClient)
         #check tweet
         if fromClient.find("tweet") == 0:
             message = fromClient.split("\"")[1]
             hash_client = fromClient.split("\"")[2]
             hashtag = hash_client.split()[0]
+            client = hash_client.split()[1]
             if len(message) > 150:
                 failureMsg = "message length illegal, connection refused."
-                connectionSocket.send(failureMsg.encode)
+                connectionSocket.send(failureMsg.encode())
             elif len(message) == 0 or message == None:
                 failureMsg = "message format illegal."
+                connectionSocket.send(failureMsg.encode())
             elif hashtag[0] != '#':
                 failureMsg = "Wrong hashtag format"
                 connectionSocket.send(failureMsg.encode())
@@ -37,12 +39,13 @@ def on_new_client(connectionSocket, address):
                     tag = "#" + tag
                     for key, value in hashtagUserDict.items():
                         if tag in value:
-                            message = key + "\"" + message + "\"" + hashtag
+                            message = key + "\"" + message + "\"" + hashtag + "\"" + client
                             connectionSocket.send(message.encode())
                         elif tag == "#ALL":
-                            message = key + "\"" + message + "\"" + hashtag
+                            message = key + "\"" + message + "\"" + hashtag + "\"" + client
                             connectionSocket.send(message.encode())
-                connectionSocket.send("".encode())
+                connectionSocket.send("\"not subscribed".encode())
+
         #check subscribe
         elif fromClient.find("subscribe") == 0:
             hashtag = fromClient.split()[1]
@@ -74,6 +77,7 @@ def on_new_client(connectionSocket, address):
                     else:
                         failureMsg = "sub <%s> failed, already exists or exceeds 3 limitation" % hashtag
                         connectionSocket.send(failureMsg.encode())  
+
         #check unsubscribe                
         elif fromClient.find("unsubscribe") == 0:
             hashtag = fromClient.split()[1]
@@ -106,9 +110,33 @@ def on_new_client(connectionSocket, address):
                 usernameList.append(username)
                 print('current list is', usernameList)
                 connectionSocket.send(successMsg.encode())
+                
         #check timeline
         elif fromClient.find("timeline") == 0:
             connectionSocket.send("Timeline requested".encode())
+
+        #check getusers
+        elif fromClient.find("getusers") == 0:
+            connectionSocket.send(str(usernameList).encode())
+
+        #check gettweets
+        elif fromClient.find("gettweets") == 0:
+            connectionSocket.send(str(fromClient.split()[1]))
+            
+        #check exit
+        elif fromClient.find("exit") == 0:
+            clientName = fromClient.split()[1]
+            if clientName in hashtagUserDict:
+                del hashtagUserDict[clientName]
+            usernameList.remove(clientName)
+            print("closing ", clientName)
+            closeMsg = "closing"
+            connectionSocket.send("close".encode())
+
+            break
+
+
+
         #wrong command
         else:
             connectionSocket.send("Wrong command".encode())
