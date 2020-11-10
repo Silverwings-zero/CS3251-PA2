@@ -23,6 +23,9 @@ def on_new_client(connectionSocket, address):
             message = fromClient.split("\"")[1]
             hash_client = fromClient.split("\"")[2]
             hashtag = hash_client.split()[0]
+            print(fromClient)
+            print(hashtag)
+            print(hash_client)
             if len(message) > 150:
                 failureMsg = "message length illegal, connection refused."
                 connectionSocket.send(failureMsg.encode)
@@ -32,13 +35,14 @@ def on_new_client(connectionSocket, address):
                 failureMsg = "Wrong hashtag format"
                 connectionSocket.send(failureMsg.encode())
             else: 
-                hashtag = hashtag.split("#")
-                for tag in hashtag:
+                split_hashtag = hashtag.split("#")
+                for tag in split_hashtag:
                     tag = "#" + tag
                     for key, value in hashtagUserDict.items():
                         if tag in value:
                             message = key + "\"" + message + "\"" + hashtag
                             connectionSocket.send(message.encode())
+                connectionSocket.send("".encode())
         #check subscribe
         elif fromClient.find("subscribe") == 0:
             hashtag = fromClient.split()[1]
@@ -104,7 +108,7 @@ def on_new_client(connectionSocket, address):
                 connectionSocket.send(successMsg.encode())
         #check timeline
         elif fromClient.find("timeline") == 0:
-            connectionSocket.send("Timeline requested")
+            connectionSocket.send("Timeline requested".encode())
         #wrong command
         else:
             connectionSocket.send("Wrong command".encode())
