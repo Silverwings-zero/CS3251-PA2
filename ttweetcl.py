@@ -72,6 +72,8 @@ def run(args):
         if serverMsg == "the username is invalid, already exists":
             exit()
 
+        timelineList = []
+
         #prompt command line
         while True:
             print("Command: ", end="")
@@ -80,7 +82,18 @@ def run(args):
             command = command + " " + args.Username
             clientSocket.send(command.encode())
             msg = clientSocket.recv(1024).decode()
-            print(msg)
+            if msg.split("\"")[0] == args.Username:
+                timelineList.append("\"" + msg.split("\"")[1] + "\" " + msg.split("\"")[2])
+                print(msg.split("\"")[1])
+            elif msg == "message length illegal, connection refused.":
+                print(msg)
+            elif msg == "message format illegal.":
+                print(msg)
+            elif msg == "Wrong hashtag format":
+                print(msg)
+            elif command.find("timeline") == 0:
+                for msg in timelineList:
+                    print(msg)
         
         #close client socket
         clientSocket.close()
