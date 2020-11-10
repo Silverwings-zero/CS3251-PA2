@@ -18,7 +18,7 @@ def on_new_client(connectionSocket, address):
     while True:
         fromClient = connectionSocket.recv(1024).decode()
         
-        #check subscribe
+        #check tweet
         if fromClient.find("tweet") == 0:
             message = fromClient.split("\"")[1]
             hashtag = fromClient.split("\"")[2]
@@ -34,6 +34,8 @@ def on_new_client(connectionSocket, address):
                 connectionSocket.send(failureMsg.encode())
             else: 
                 connectionSocket.send(message.encode())
+
+        #check subscribe
         elif fromClient.find("subscribe") == 0:
             hashtag = fromClient.split()[1]
             username = fromClient.split()[2]
@@ -64,6 +66,7 @@ def on_new_client(connectionSocket, address):
                     else:
                         failureMsg = "sub <%s> failed, already exists or exceeds 3 limitation" % hashtag
                         connectionSocket.send(failureMsg.encode())  
+
         #check unsubscribe                
         elif fromClient.find("unsubscribe") == 0:
             hashtag = fromClient.split()[1]
@@ -98,9 +101,11 @@ def on_new_client(connectionSocket, address):
                 print('current list is', usernameList)
                 connectionSocket.send(successMsg.encode())
 
+        #check getusers
         elif fromClient.find("getusers") == 0:
             connectionSocket.send(str(usernameList).encode())
 
+        #check exit
         elif fromClient.find("exit") == 0:
             clientName = fromClient.split()[1]
             if clientName in hashtagUserDict:
