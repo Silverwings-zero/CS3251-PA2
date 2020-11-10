@@ -73,12 +73,22 @@ def run(args):
         #prompt command line
         while True:
             print("Command: ", end="")
-            command = input()
+            commandinput = input()
             #pass in username
-            command = command + " " + args.Username
+            command = commandinput + " " + args.Username
             clientSocket.send(command.encode())
             msg = clientSocket.recv(1024).decode()
             print(msg)
+            if commandinput == "getusers": 
+                res = msg.strip('][').split(', ') 
+                for i in range(len(res)):
+                    #print("user number ", i, ": ", res[i], "\n")
+                    print(res[i])
+                res = None
+                msg = None
+            
+            if msg == "close":
+                break
         
         #close client socket
         clientSocket.close()
