@@ -31,7 +31,7 @@ def on_new_client(connectionSocket, address):
                 failureMsg = "message format illegal."
                 connectionSocket.send(failureMsg.encode())
             elif hashtag[0] != '#':
-                failureMsg = "Wrong hashtag format"
+                failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else: 
                 split_hashtag = hashtag.split("#")
@@ -51,7 +51,7 @@ def on_new_client(connectionSocket, address):
             hashtag = fromClient.split()[1]
             username = fromClient.split()[2]
             if hashtag[0] != '#':
-                failureMsg = "Wrong hashtag format"
+                failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else:
                 #new list
@@ -83,7 +83,7 @@ def on_new_client(connectionSocket, address):
             hashtag = fromClient.split()[1]
             username = fromClient.split()[2]
             if hashtag[0] != '#':
-                failureMsg = "Wrong hashtag format"
+                failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else:
                 if hashtag == "#ALL":
@@ -126,8 +126,7 @@ def on_new_client(connectionSocket, address):
                 del hashtagUserDict[clientName]
             usernameList.remove(clientName)
             print("closing ", clientName)
-            closeMsg = "closing"
-            connectionSocket.send("close".encode())
+            connectionSocket.send("bye bye".encode())
 
             break
 
