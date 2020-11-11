@@ -118,10 +118,6 @@ def on_new_client(connectionSocket, address):
         #check getusers
         elif fromClient.find("getusers") == 0:
             connectionSocket.send(str(usernameList).encode())
-
-        #check gettweets
-        elif fromClient.find("gettweets") == 0:
-            connectionSocket.send(str(fromClient.split()[1]))
             
         #check exit
         elif fromClient.find("exit") == 0:

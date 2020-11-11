@@ -110,8 +110,12 @@ def run(args):
                 res = None
                 msg = None
             
-            if commandinput == "gettweets": 
-                user = msg
+            if commandinput.split()[0] == "gettweets": 
+                username = commandinput.split()[1]
+                for i in timelineList:
+                    tUser = i[:i.find(":")]
+                    if username == tUser:
+                        print(i)
                 #for 
 
             if msg == "close":
