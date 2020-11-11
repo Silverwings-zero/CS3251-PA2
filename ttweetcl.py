@@ -102,7 +102,7 @@ def run(args):
         elif command.find("timeline") == 0:
             for msg in timelineList:
                 print(msg)
-        else:
+        elif msg != "\"not subscribed":
             print(msg)
                 
         #print(msg)

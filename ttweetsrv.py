@@ -14,13 +14,19 @@ usernameList = []
 hashtagList = []
 hashtagUserDict = {}
 
+def check_hashtag_format(hashtag):
+    tags = hashtag.split("#")
+    for tag in tags[1:]:
+        if not tag.isalnum():
+            return True
+    return False
+
 def on_new_client(connectionSocket, address):
     while True:
         fromClient = connectionSocket.recv(1024).decode()
         #print("fromClient is: ", fromClient)
         #check tweet
         if fromClient.find("tweet") == 0:
-            print(fromClient)
             message = fromClient.split("\"")[1]
             hash_client = fromClient.split("\"")[2]
             hashtag = hash_client.split()[0]
@@ -31,7 +37,7 @@ def on_new_client(connectionSocket, address):
             elif len(message) == 0 or message == None:
                 failureMsg = "message format illegal."
                 connectionSocket.send(failureMsg.encode())
-            elif hashtag[0] != '#':
+            elif check_hashtag_format(hashtag):
                 failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else: 
