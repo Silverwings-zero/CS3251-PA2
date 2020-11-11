@@ -40,14 +40,14 @@ def run(args):
         print("error: server ip invalid, connection refused.")
         exit()
 
-    try:
-        #print(args.ServerPort)
-        serverPort = int(args.ServerPort)
-        #check serverPort value, raise error if server port is out of bound
-        if serverPort < 1000 or serverPort > 65535:
-           raise ValueError("error: server port invalid, connection refused.")
-        
+    #check serverPort value, raise error if server port is out of bound
+    if isinstance(args.ServerPort, int) & (args.ServerPort < 1000 or args.ServerPort > 65535):
+        serverPort = args.ServerPort
+    else:
+        print("error: server port invalid, connection refused.")
+        exit()
 
+    try:
         #check user name only contains alphanumeric characters
         #print(args.Username.isalnum())
         if (not args.Username.isalnum()):
