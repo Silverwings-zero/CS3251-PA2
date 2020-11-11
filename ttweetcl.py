@@ -19,9 +19,9 @@ def main():
     argument 3: positional argument userName indicate the userName that we take
     '''
     parser = argparse.ArgumentParser(description= 'minitweet client side')
-    parser.add_argument('ServerIP', type = str)
-    parser.add_argument('ServerPort', type = int)
-    parser.add_argument('Username', type = str)
+    parser.add_argument('ServerIP')
+    parser.add_argument('ServerPort')
+    parser.add_argument('Username')
 
     #attaching function run
     parser.set_defaults(func=run)

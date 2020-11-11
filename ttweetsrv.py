@@ -20,6 +20,7 @@ def on_new_client(connectionSocket, address):
         #print("fromClient is: ", fromClient)
         #check tweet
         if fromClient.find("tweet") == 0:
+            print(fromClient)
             message = fromClient.split("\"")[1]
             hash_client = fromClient.split("\"")[2]
             hashtag = hash_client.split()[0]
