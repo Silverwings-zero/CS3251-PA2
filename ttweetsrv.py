@@ -20,26 +20,10 @@ def on_new_client(connectionSocket, address):
         #print("fromClient is: ", fromClient)
         #check tweet
         if fromClient.find("tweet") == 0:
-            print("fromClient is: ", fromClient)
-            message = fromClient.split()[1]
-            hash_client = fromClient.split()[3]
-            hashtag = fromClient.split()[2]
-            print("msg: ", message)
-            print("client: ", hash_client)
-            print("hashtag: ", hashtag)
-
-
-            #when user attempts to send msg to an unsubscribed hashtag
-            userHashTags = []
-            if hash_client in hashtagUserDict:
-                userHashTags = hashtagUserDict[hash_client]
-            if hashtag not in userHashTags:
-                failureMsg = "user is not subscribed to the hashtag"
-                connectionSocket.send(failureMsg.encode())
-                continue
-            #print("client msg is: ",fromClient)
-
-
+            message = fromClient.split("\"")[1]
+            hash_client = fromClient.split("\"")[2]
+            hashtag = hash_client.split()[0]
+            client = hash_client.split()[1]
             if len(message) > 150:
                 failureMsg = "message length illegal, connection refused."
                 connectionSocket.send(failureMsg.encode())
@@ -50,23 +34,17 @@ def on_new_client(connectionSocket, address):
                 failureMsg = "Wrong hashtag format"
                 connectionSocket.send(failureMsg.encode())
             else: 
-                #connectionSocket.send(message.encode())
-                ### todo: Handle #ALL hashtag case
-
-                split_hashtag = hashtag.split("#")[1:]
-                print("split_hashtag is: ", split_hashtag)
-                for tag in split_hashtag:
-                    #check when there is double # appearing
-                    if tag[0] == "#":
-                        failureMsg = "Wrong hashtag format"
-                        connectionSocket.send(failureMsg.encode())
-                    #recover hashtag 
+                split_hashtag = hashtag.split("#")
+                for tag in split_hashtag[1:]:
                     tag = "#" + tag
                     for key, value in hashtagUserDict.items():
                         if tag in value:
-                            message = key + "\"" + message + "\"" + hashtag
+                            message = key + "\"" + message + "\"" + hashtag + "\"" + client
                             connectionSocket.send(message.encode())
-                connectionSocket.send("".encode())
+                        elif tag == "#ALL":
+                            message = key + "\"" + message + "\"" + hashtag + "\"" + client
+                            connectionSocket.send(message.encode())
+                connectionSocket.send("\"not subscribed".encode())
 
         #check subscribe
         elif fromClient.find("subscribe") == 0:
@@ -140,10 +118,6 @@ def on_new_client(connectionSocket, address):
         #check getusers
         elif fromClient.find("getusers") == 0:
             connectionSocket.send(str(usernameList).encode())
-
-        #check gettweets
-        elif fromClient.find("gettweets") == 0:
-            connectionSocket.send(str(fromClient.split()[1]))
             
         #check exit
         elif fromClient.find("exit") == 0:

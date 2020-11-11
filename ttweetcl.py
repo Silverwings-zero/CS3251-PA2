@@ -74,7 +74,6 @@ def run(args):
 
         #prompt command line
         while True:
-            print("timelinelist is :",timelineList)
             print("Command: ", end="")
             commandinput = input()
             #pass in username
@@ -86,7 +85,7 @@ def run(args):
 
             
             if msg.split("\"")[0] == args.Username:
-                timelineList.append("\"" + msg.split("\"")[1] + "\" " + msg.split("\"")[2])
+                timelineList.append(msg.split("\"")[3] + ": \"" + msg.split("\"")[1] + "\" " + msg.split("\"")[2])
                 print(msg.split("\"")[1])
                 
             elif msg == "message length illegal, connection refused.":
@@ -111,8 +110,12 @@ def run(args):
                 res = None
                 msg = None
             
-            if commandinput == "gettweets": 
-                user = msg
+            if commandinput.split()[0] == "gettweets": 
+                username = commandinput.split()[1]
+                for i in timelineList:
+                    tUser = i[:i.find(":")]
+                    if username == tUser:
+                        print(i)
                 #for 
 
             if msg == "close":
