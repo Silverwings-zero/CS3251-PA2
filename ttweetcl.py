@@ -19,9 +19,9 @@ def main():
     argument 3: positional argument userName indicate the userName that we take
     '''
     parser = argparse.ArgumentParser(description= 'minitweet client side')
-    parser.add_argument('ServerIP', type = str)
-    parser.add_argument('ServerPort', type = int)
-    parser.add_argument('Username', type = str)
+    parser.add_argument('ServerIP')
+    parser.add_argument('ServerPort')
+    parser.add_argument('Username')
 
     #attaching function run
     parser.set_defaults(func=run)
@@ -40,21 +40,30 @@ def run(args):
         print("error: server ip invalid, connection refused.")
         exit()
 
-    #check serverPort value, raise error if server port is out of bound
-    if isinstance(args.ServerPort, int) & (args.ServerPort < 1000 or args.ServerPort > 65535):
-        serverPort = args.ServerPort
-    else:
-        print("error: server port invalid, connection refused.")
-        exit()
 
     try:
-        #check user name only contains alphanumeric characters
-        #print(args.Username.isalnum())
+        #print(args.ServerPort)
+        serverPort = int(args.ServerPort)
+        #check serverPort value, raise error if server port is out of bound
+        if serverPort < 1000 or serverPort > 65535:
+           raise ValueError()
+    except ValueError:
+        print("error: server port invalid, connection refused.")
+        exit()
+    
+
+    #check user name only contains alphanumeric characters
+    #print(args.Username.isalnum())
+    try:
         if (not args.Username.isalnum()):
-            raise ValueError("error: username has wrong format, connection refused.")
+            raise ValueError()
+    except ValueError:
+        print("error: username has wrong format, connection refused.")
+        exit()
+    
+    message = "username " + args.Username
 
-        message = "username " + args.Username
-
+    try:
         #define socket using ip4 and TCP
         clientSocket = socket(AF_INET, SOCK_STREAM)
         clientSocket.settimeout(5)
@@ -63,77 +72,69 @@ def run(args):
         clientSocket.send(message.encode())
         #receive message from Server
         serverMsg = clientSocket.recv(1024).decode()
-
-        #print(serverMsg)
-        
-        #username invalid, exit
-        if serverMsg == "the username is invalid, already exists":
-            exit()
-
-        timelineList = []
-
-        #prompt command line
-        while True:
-            print("Command: ", end="")
-            commandinput = input()
-            #pass in username
-            command = commandinput + " " + args.Username
-            clientSocket.send(command.encode())
-            msg = clientSocket.recv(1024).decode()
-            
-            #when the message is send to us, append the message to timeline and print the message
-
-            
-            if msg.split("\"")[0] == args.Username:
-                timelineList.append(msg.split("\"")[3] + ": \"" + msg.split("\"")[1] + "\" " + msg.split("\"")[2])
-                print(msg.split("\"")[1])
-                
-            elif msg == "message length illegal, connection refused.":
-                print(msg)
-            elif msg == "message format illegal.":
-                print(msg)
-            elif msg == "user is not subscribed to the hashtag":
-                print(msg)
-            elif msg == "Wrong hashtag format":
-                print(msg)
-            elif command.find("timeline") == 0:
-                for msg in timelineList:
-                    print(msg)
-                    
-            #print(msg)
-
-            if commandinput == "getusers": 
-                res = msg.strip('][').split(', ') 
-                for i in range(len(res)):
-                    #print("user number ", i, ": ", res[i], "\n")
-                    print(res[i])
-                res = None
-                msg = None
-            
-            if commandinput.split()[0] == "gettweets": 
-                username = commandinput.split()[1]
-                for i in timelineList:
-                    tUser = i[:i.find(":")]
-                    if username == tUser:
-                        print(i)
-                #for 
-
-            if msg == "close":
-                break
-        
-        #close client socket
-        clientSocket.close()
     except ConnectionRefusedError:
-        print("Error Message: Server Not Found")
+        print("error: server port invalid, connection refused.")
         exit()
-    except timeout:
-        print("Error Message: Session timeout")
+    #print(serverMsg)
+    
+    #username invalid, exit
+    if serverMsg == "the username is invalid, already exists":
+        print("username illegal, connection refused.")
         exit()
-    except ValueError:
-        print("Error Message: argument value is invalid")
-        exit()
-    except OSError:
-        print("Error Message: Check the ServerIP, no route to host")
+
+    timelineList = []
+    print("username legal, connection established.")
+    #prompt command line
+    while True:
+        print("Command: ", end="")
+        commandinput = input()
+        #pass in username
+        command = commandinput + " " + args.Username
+        clientSocket.send(command.encode())
+        msg = clientSocket.recv(1024).decode()
+        
+        #when the message is send to us, append the message to timeline and print the message
+
+        
+        if msg.split("\"")[0] == args.Username:
+            timelineList.append(msg.split("\"")[3] + ": \"" + msg.split("\"")[1] + "\" " + msg.split("\"")[2])
+            print(msg.split("\"")[1])
+        elif command.find("timeline") == 0:
+            for msg in timelineList:
+                print(msg)
+        else:
+            print(msg)
+                
+        #print(msg)
+
+        if commandinput == "getusers": 
+            res = msg.strip('][').split(', ') 
+            for i in range(len(res)):
+                #print("user number ", i, ": ", res[i], "\n")
+                print(res[i])
+            res = None
+            msg = None
+        
+        if commandinput == "gettweets": 
+            user = msg
+            #for 
+
+        if msg == "bye bye":
+            break
+    
+    #close client socket
+    clientSocket.close()
+    # except ConnectionRefusedError:
+    #     print("Error Message: Server Not Found")
+    #     exit()
+    # except timeout:
+    #     print("Error Message: Session timeout")
+    #     exit()
+    # except ValueError:
+    #     print("Error Message: argument value is invalid")
+    #     exit()
+    # except OSError:
+    #     print("Error Message: Check the ServerIP, no route to host")
 
 if __name__=="__main__":
 	main()
