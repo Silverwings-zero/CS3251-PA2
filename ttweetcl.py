@@ -119,7 +119,7 @@ def run(args):
             user = msg
             #for 
 
-        if msg == "close":
+        if msg == "bye bye":
             break
     
     #close client socket
