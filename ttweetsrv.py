@@ -19,6 +19,8 @@ def check_hashtag_format(hashtag):
     for tag in tags[1:]:
         if not tag.isalnum():
             return True
+        if tag == "ALL":
+            return True
     return False
 
 def on_new_client(connectionSocket, address):
@@ -48,7 +50,7 @@ def on_new_client(connectionSocket, address):
                         if tag in value:
                             message = key + "\"" + message + "\"" + hashtag + "\"" + client
                             connectionSocket.send(message.encode())
-                        elif tag == "#ALL":
+                        elif "#ALL" in value:
                             message = key + "\"" + message + "\"" + hashtag + "\"" + client
                             connectionSocket.send(message.encode())
                 connectionSocket.send("\"not subscribed".encode())
@@ -57,7 +59,7 @@ def on_new_client(connectionSocket, address):
         elif fromClient.find("subscribe") == 0:
             hashtag = fromClient.split()[1]
             username = fromClient.split()[2]
-            if hashtag[0] != '#':
+            if not hashtag.split("#")[1].isalnum():
                 failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else:
@@ -79,17 +81,17 @@ def on_new_client(connectionSocket, address):
                                 hashtagList.append(hashtag)
                             connectionSocket.send("operation success".encode())
                         else:
-                            failureMsg = "sub <%s> failed, already exists or exceeds 3 limitation" % hashtag
+                            failureMsg = "sub %s failed, already exists or exceeds 3 limitation" % hashtag
                             connectionSocket.send(failureMsg.encode())  
                     else:
-                        failureMsg = "sub <%s> failed, already exists or exceeds 3 limitation" % hashtag
+                        failureMsg = "sub %s failed, already exists or exceeds 3 limitation" % hashtag
                         connectionSocket.send(failureMsg.encode())  
 
         #check unsubscribe                
         elif fromClient.find("unsubscribe") == 0:
             hashtag = fromClient.split()[1]
             username = fromClient.split()[2]
-            if hashtag[0] != '#':
+            if not hashtag.split("#")[1].isalnum():
                 failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else:
