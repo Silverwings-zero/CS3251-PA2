@@ -1,0 +1,11 @@
+error: server port invalid, connection refused.
+
+user network stdin command: subscribe #ALL
+
+user network stdin command: unsubscribe #ALL
+
+user network stdin command: timeline
+
+user network stdin command: timeline
+
+user network stdin command: exit

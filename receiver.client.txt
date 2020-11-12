@@ -1,0 +1,27 @@
+error: server port invalid, connection refused.
+
+user receiver stdin command: subscribe #9love3251
+
+user receiver stdin command: subscribe #8love3251
+
+user receiver stdin command: subscribe #7love3251
+
+user receiver stdin command: subscribe #6love3251
+
+user receiver stdin command: subscribe #5love3251
+
+user receiver stdin command: subscribe #4love3251
+
+user receiver stdin command: subscribe #3love3251
+
+user receiver stdin command: subscribe #2love3251
+
+user receiver stdin command: subscribe #1love3251
+
+user receiver stdin command: subscribe #0love3251
+
+user receiver stdin command: timeline
+
+user receiver stdin command: timeline
+
+user receiver stdin command: exit

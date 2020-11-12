@@ -13,6 +13,7 @@ import _thread
 usernameList = []
 hashtagList = []
 hashtagUserDict = {}
+tweetTimeLine = {}
 
 def check_hashtag_format(hashtag):
     tags = hashtag.split("#")
@@ -43,6 +44,11 @@ def on_new_client(connectionSocket, address):
                 failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else: 
+                if tweetTimeLine.get(client) == None: 
+                    tweetTimeLine[client] = []
+                    tweetTimeLine[client].append(client + ": \"" + message + "\" " + hashtag)
+                else:
+                    tweetTimeLine[client].append(client + ": \"" + message + "\" " + hashtag)
                 split_hashtag = hashtag.split("#")
                 for tag in split_hashtag[1:]:
                     tag = "#" + tag
@@ -134,12 +140,15 @@ def on_new_client(connectionSocket, address):
 
         #check gettweet
         elif fromClient.find("gettweets") == 0:
-            connectionSocket.send("gettweets".encode())
+            username = fromClient.split()[1]
+            connectionSocket.send(("gettweets, " + str(tweetTimeLine[username])).encode())
         #check exit
         elif fromClient.find("exit") == 0:
             clientName = fromClient.split()[1]
             if clientName in hashtagUserDict:
                 del hashtagUserDict[clientName]
+            if clientName in tweetTimeLine:
+                del tweetTimeLine[clientName]
             usernameList.remove(clientName)
             print("closing ", clientName)
             connectionSocket.send("bye bye".encode())

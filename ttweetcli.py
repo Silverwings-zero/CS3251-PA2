@@ -10,6 +10,7 @@ import sys
 import argparse
 import threading
 import os
+import json
 
 timelineList = []
 def main():
@@ -56,10 +57,10 @@ def recv(username, clientSocket):
             msg = None
         
         elif msg.find("gettweets") == 0: 
-                for i in timelineList:
-                    tUser = i[:i.find(":")]
-                    if username == tUser:
-                        print(i)
+            msg = msg.replace("gettweets, ", "")
+            res = msg.strip('][').split(', ') 
+            for i in range(len(res)): 
+                print(res[i].replace("\'",""))
 
         elif msg == "bye bye":
             print("bye bye")

@@ -1,0 +1,12 @@
+test_no_server
+
+run command: python3 -u ttweetcli.py 127.0.0.1 13000 cxworks
+username legal, connection established.
+Traceback (most recent call last):
+  File "ttweetcli.py", line 156, in <module>
+    main()
+  File "ttweetcli.py", line 33, in main
+    args.func(args)
+  File "ttweetcli.py", line 136, in run
+    commandinput = input()
+KeyboardInterrupt
