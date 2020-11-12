@@ -14,6 +14,15 @@ usernameList = []
 hashtagList = []
 hashtagUserDict = {}
 
+def check_hashtag_format(hashtag):
+    tags = hashtag.split("#")
+    for tag in tags[1:]:
+        if not tag.isalnum():
+            return True
+        if tag == "ALL":
+            return True
+    return False
+
 def on_new_client(connectionSocket, address):
     while True:
         fromClient = connectionSocket.recv(1024).decode()
@@ -30,8 +39,8 @@ def on_new_client(connectionSocket, address):
             elif len(message) == 0 or message == None:
                 failureMsg = "message format illegal."
                 connectionSocket.send(failureMsg.encode())
-            elif hashtag[0] != '#':
-                failureMsg = "Wrong hashtag format"
+            elif check_hashtag_format(hashtag):
+                failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else: 
                 split_hashtag = hashtag.split("#")
@@ -41,7 +50,7 @@ def on_new_client(connectionSocket, address):
                         if tag in value:
                             message = key + "\"" + message + "\"" + hashtag + "\"" + client
                             connectionSocket.send(message.encode())
-                        elif tag == "#ALL":
+                        elif "#ALL" in value:
                             message = key + "\"" + message + "\"" + hashtag + "\"" + client
                             connectionSocket.send(message.encode())
                 connectionSocket.send("\"not subscribed".encode())
@@ -50,8 +59,8 @@ def on_new_client(connectionSocket, address):
         elif fromClient.find("subscribe") == 0:
             hashtag = fromClient.split()[1]
             username = fromClient.split()[2]
-            if hashtag[0] != '#':
-                failureMsg = "Wrong hashtag format"
+            if not hashtag.split("#")[1].isalnum():
+                failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else:
                 #new list
@@ -72,18 +81,18 @@ def on_new_client(connectionSocket, address):
                                 hashtagList.append(hashtag)
                             connectionSocket.send("operation success".encode())
                         else:
-                            failureMsg = "sub <%s> failed, already exists or exceeds 3 limitation" % hashtag
+                            failureMsg = "sub %s failed, already exists or exceeds 3 limitation" % hashtag
                             connectionSocket.send(failureMsg.encode())  
                     else:
-                        failureMsg = "sub <%s> failed, already exists or exceeds 3 limitation" % hashtag
+                        failureMsg = "sub %s failed, already exists or exceeds 3 limitation" % hashtag
                         connectionSocket.send(failureMsg.encode())  
 
         #check unsubscribe                
         elif fromClient.find("unsubscribe") == 0:
             hashtag = fromClient.split()[1]
             username = fromClient.split()[2]
-            if hashtag[0] != '#':
-                failureMsg = "Wrong hashtag format"
+            if not hashtag.split("#")[1].isalnum():
+                failureMsg = "hashtag illegal format, connection refused."
                 connectionSocket.send(failureMsg.encode())
             else:
                 if hashtag == "#ALL":
@@ -117,8 +126,15 @@ def on_new_client(connectionSocket, address):
 
         #check getusers
         elif fromClient.find("getusers") == 0:
+            connectionSocket.send(("getusers, " + str(usernameList)).encode())
+
+        #check getusers
+        elif fromClient.find("getusers") == 0:
             connectionSocket.send(str(usernameList).encode())
-            
+
+        #check gettweet
+        elif fromClient.find("gettweets") == 0:
+            connectionSocket.send("gettweets".encode())
         #check exit
         elif fromClient.find("exit") == 0:
             clientName = fromClient.split()[1]
@@ -126,8 +142,7 @@ def on_new_client(connectionSocket, address):
                 del hashtagUserDict[clientName]
             usernameList.remove(clientName)
             print("closing ", clientName)
-            closeMsg = "closing"
-            connectionSocket.send("close".encode())
+            connectionSocket.send("bye bye".encode())
 
             break
 
