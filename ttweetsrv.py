@@ -17,12 +17,12 @@ hashtagUserDict = {}
 def on_new_client(connectionSocket, address):
     while True:
         fromClient = connectionSocket.recv(1024).decode()
-        #print("fromClient is: ", fromClient)
         #check tweet
         if fromClient.find("tweet") == 0:
             message = fromClient.split("\"")[1]
             hash_client = fromClient.split("\"")[2]
             hashtag = hash_client.split()[0]
+            print("hashtag: ", hashtag)
             client = hash_client.split()[1]
             if len(message) > 150:
                 failureMsg = "message length illegal, connection refused."
@@ -137,6 +137,7 @@ def on_new_client(connectionSocket, address):
             connectionSocket.send("Wrong command".encode())
         print('global subscribe list is', hashtagList)
         print('global subscribe dict is', hashtagUserDict)
+        print('hashtagList is', hashtagList)
         # #Determine client modes from the first two characters in client message
         # #upload mode change the buffer to the client message and notify the client
         # if fromClient[0:2] == "-u":
