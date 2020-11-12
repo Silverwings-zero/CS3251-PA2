@@ -86,6 +86,7 @@ def run(args):
     print("username legal, connection established.")
     #prompt command line
     while True:
+
         print("Command: ", end="")
         commandinput = input()
         #pass in username
